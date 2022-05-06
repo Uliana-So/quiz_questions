@@ -1,31 +1,20 @@
-all:	mkdir up
-
-# mkdir:
-# 		echo "Create folders"
-# 		mkdir -p ~/data/db
-# 		mkdir -p ~/data/wp
-# 		mkdir -p ~/data/ad
-# 		mkdir -p ~/data/rd
+all:	up
 
 up:
-		docker-compose -f ./srcs/docker-compose.yml up --build
+		docker-compose --env-file ./srcs/.env -f ./srcs/docker-compose.yml up --build
 
 stop:
 		docker stop $$(docker ps -aq)
 
 rm:
 		docker rm -f $$(docker ps -aq)
-		docker volume rm mysql
-		docker volume rm wordpress
-		docker volume rm adminer
-		docker volume rm redis
-		rm -fr ~/data
+		docker volume rm srcs_postgresql
 
 rmi:
 		docker rmi -f $$(docker images -q)
 
-clean:	stop rm
+clean:	rm rmi
 
-fclean:	clean rmi
+fclean:	stop clean
 
 .PHONY:	all mkdir up stop rm rmi
