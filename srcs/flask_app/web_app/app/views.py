@@ -1,6 +1,6 @@
 import logging
 import logging.config
-from flask import Flask
+from flask import Flask, Response
 from flask import request, jsonify, make_response
 
 from .db_connect import db_session
@@ -21,10 +21,14 @@ def read_request():
 
     try:
         resp_question = last_question()
-        count = request.json["questions_num"]
-        data = send_request(count)
-        for item in data:
-            add_data(**item)
+        req_json = request.json
+        count = req_json.get("questions_num")
+        if count and isinstance(count, int) and count > 0:
+            data = send_request(count)
+            for item in data:
+                add_data(**item)
+        else:
+            return Response(status=400)
 
     except Exception as error:
         logging.error(error, exc_info=True)
