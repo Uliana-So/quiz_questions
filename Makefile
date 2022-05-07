@@ -1,20 +1,20 @@
 all:	up
 
 up:
-	docker-compose --env-file ./srcs/.env -f ./srcs/docker-compose.yml up --build
+	docker-compose --env-file ./srcs/.env -f ./srcs/docker-compose.yml up --build -d
+
+down:
+	docker-compose -f ./srcs/docker-compose.yml down
 
 stop:
-	docker stop $$(docker ps -aq)
+	docker-compose -f ./srcs/docker-compose.yml stop
 
 rm:
-	docker rm -f $$(docker ps -aq)
+	docker-compose -f ./srcs/docker-compose.yml rm -s -v -f
 	docker volume rm srcs_postgresql
 
-rmi:
-	docker rmi -f $$(docker images -q)
-
-clean:	rm rmi
+clean:	rm
 
 fclean:	stop clean
 
-.PHONY:	all mkdir up stop rm rmi
+.PHONY:	all up down stop rm
